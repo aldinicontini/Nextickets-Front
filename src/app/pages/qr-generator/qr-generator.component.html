@@ -1,0 +1,116 @@
+<p-toast position="top-right" />
+
+<div class="qr-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon qr-icon">
+        <i class="pi pi-qrcode"></i>
+      </div>
+      <div>
+        <h1>Códigos QR por Estación</h1>
+        <p>Imprime y pega los QR en cada computadora</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <p-button
+        label="Ver reportes"
+        icon="pi pi-list-check"
+        styleClass="p-button-outlined p-button-sm"
+        (onClick)="goToReports()"
+      />
+      <p-button
+        label="Imprimir sección"
+        icon="pi pi-print"
+        styleClass="p-button-warning p-button-sm"
+        (onClick)="printSection()"
+      />
+    </div>
+  </div>
+
+  <!-- Navegación & Búsqueda Integrada -->
+  <div class="section-tabs">
+    <!-- Buscador Global -->
+    <div class="search-wrap">
+      <i class="pi pi-search"></i>
+      <input type="text" 
+             class="qr-search-input" 
+             placeholder="Buscar compu..."
+             [ngModel]="searchTerm()"
+             (ngModelChange)="onSearchChange($event)">
+    </div>
+
+    <!-- Divisor vertical -->
+    <div class="tab-divider"></div>
+
+    <button
+      class="tab-btn"
+      *ngFor="let sec of sections"
+      [class.active]="selectedSection() === sec && !searchTerm()"
+      (click)="selectSection(sec)"
+    >
+      <span class="tab-label">{{ sec }}</span>
+      <span class="tab-count">{{ sectionCounts()[sec] }}</span>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isGenerating()">
+    <i class="pi pi-spin pi-cog"></i>
+    <span>Generando códigos QR...</span>
+  </div>
+
+  <!-- QR Grid -->
+  <div class="qr-grid" *ngIf="!isGenerating()">
+    <div class="qr-card" *ngFor="let station of visibleStations()">
+      <div class="qr-inner">
+        <div class="qr-image-wrap">
+          <img
+            *ngIf="station.qrDataUrl"
+            [src]="station.qrDataUrl"
+            [alt]="'QR ' + station.code"
+            class="qr-image"
+          />
+          <div class="qr-skeleton" *ngIf="!station.qrDataUrl">
+            <i class="pi pi-qrcode"></i>
+          </div>
+        </div>
+        <div class="qr-info">
+          <span class="qr-code">{{ station.code }}</span>
+          <span class="qr-section">Sección {{ station.seccion }} · Est. {{ station.numero }}</span>
+        </div>
+        <div class="qr-actions">
+          <button class="qr-btn copy" (click)="goToReport(station)" title="Ir a Reportar">
+            <i class="pi pi-external-link"></i>
+          </button>
+          <button class="qr-btn print" (click)="printStation(station)" title="Imprimir">
+            <i class="pi pi-print"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Network Access Banner -->
+  <div class="network-banner">
+    <div class="network-left">
+      <div class="network-icon"><i class="pi pi-globe"></i></div>
+      <div class="network-text">
+        <span class="network-title">Acceso en red local</span>
+        <span class="network-subtitle">Usa esta URL desde cualquier dispositivo conectado a la misma red Wi-Fi</span>
+      </div>
+    </div>
+    <div class="network-url-wrap">
+      <code class="network-url">{{ baseUrl() }}/new?estacion=[CODIGO]</code>
+      <button class="copy-base-btn" (click)="copyBaseUrl()" title="Copiar base URL">
+        <i class="pi pi-copy"></i> Copiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="qr-info-bar">
+    <i class="pi pi-info-circle"></i>
+    <span>Los QR se generan automáticamente con la URL de esta pantalla — ábrela desde la IP de red para que los QRs ya apunten a la dirección correcta</span>
+  </div>
+</div>

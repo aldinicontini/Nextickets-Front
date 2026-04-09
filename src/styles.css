@@ -1,0 +1,210 @@
+/* =============================================
+   DISBOF REPORTES — Global Styles
+   Dark mode premium design system
+   ============================================= */
+
+/* Reset + Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #0a0f1e;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: white;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* ===== PRIMENG DARK OVERRIDES ===== */
+
+/* Override PrimeNG table for dark mode */
+:root {
+  --p-surface-0: #0a0f1e;
+  --p-surface-50: #0f172a;
+  --p-surface-100: #111827;
+  --p-surface-200: #1e293b;
+  --p-surface-300: #334155;
+  --p-surface-400: #475569;
+  --p-surface-500: #64748b;
+  --p-surface-600: #94a3b8;
+  --p-surface-700: #cbd5e1;
+  --p-surface-800: #e2e8f0;
+  --p-surface-900: #f1f5f9;
+  --p-surface-950: #f8fafc;
+}
+
+/* Table overrides */
+.disbof-table .p-datatable-header-cell {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 0.875rem 1rem !important;
+}
+
+.disbof-table .p-datatable-emptymessage {
+  background: transparent;
+}
+
+/* ── PrimeNG Dialog Dark Mode Overrides ─────────── */
+.p-dialog {
+  background: #0f172a !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important;
+}
+
+.p-dialog .p-dialog-header {
+  background: #0f172a !important;
+  color: white !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.p-dialog .p-dialog-content {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+  padding: 1.5rem !important;
+}
+
+.p-dialog .p-dialog-footer {
+  background: #0f172a !important;
+  border-top: 1px solid rgba(255,255,255,0.05) !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.p-dialog .p-dialog-header-icon {
+  color: #94a3b8 !important;
+}
+
+.p-dialog .p-dialog-header-icon:hover {
+  background: rgba(255,255,255,0.05) !important;
+  color: white !important;
+}
+
+.disbof-table .p-datatable-tbody > tr {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+  transition: background 0.15s !important;
+}
+
+.disbof-table .p-datatable-tbody > tr:hover {
+  background: rgba(255,255,255,0.025) !important;
+}
+
+.disbof-table .p-datatable-tbody > tr > td {
+  border: none !important;
+  padding: 0.75rem 1rem !important;
+  vertical-align: middle !important;
+  color: #e2e8f0 !important;
+  font-size: 0.875rem !important;
+}
+
+.disbof-table .p-datatable-paginator-bottom {
+  background: #0f172a !important;
+  border-top: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Dialog overrides */
+.confirm-dialog .p-dialog {
+  background: #111827 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 20px !important;
+}
+
+.confirm-dialog .p-dialog-header {
+  background: #111827 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 1.25rem 1.5rem !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 20px 20px 0 0 !important;
+}
+
+.confirm-dialog .p-dialog-content {
+  background: #111827 !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.confirm-dialog .p-dialog-footer {
+  background: #111827 !important;
+  border-top: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 1rem 1.5rem !important;
+  border-radius: 0 0 20px 20px !important;
+}
+
+/* Toast */
+.p-toast .p-toast-message {
+  border-radius: 12px !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Buttons */
+.p-button {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Tag */
+.status-tag {
+  border-radius: 999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+}
+
+/* Select */
+.p-select {
+  background: #1e293b !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  border-radius: 10px !important;
+}
+
+/* ── Toast Mobile Fix ─────────────── */
+.p-toast {
+  max-width: 90vw !important;
+  word-break: break-word !important;
+}
+
+.p-toast-message-text {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}

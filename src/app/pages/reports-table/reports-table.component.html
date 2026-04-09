@@ -1,0 +1,240 @@
+<p-toast position="top-right" />
+<p-confirmdialog />
+
+<div class="reports-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <i class="pi pi-list-check"></i>
+      </div>
+      <div>
+        <h1>Reportes de Soporte</h1>
+        <p>Gestiona y da seguimiento a todos los reportes</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <p-button
+        label="Ver QR codes"
+        icon="pi pi-qrcode"
+        styleClass="p-button-outlined p-button-sm"
+        (onClick)="goToQR()"
+      />
+      <p-button
+        [label]="isExporting() ? 'Exportando...' : 'Exportar Excel'"
+        icon="pi pi-file-excel"
+        styleClass="p-button-success p-button-sm btn-excel"
+        [loading]="isExporting()"
+        (onClick)="exportExcel()"
+      />
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon"><i class="pi pi-inbox"></i></div>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats().total }}</span>
+        <span class="stat-label">Total Reportes</span>
+      </div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-icon"><i class="pi pi-clock"></i></div>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats().pendiente }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+    </div>
+    <div class="stat-card done">
+      <div class="stat-icon"><i class="pi pi-check-circle"></i></div>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats().finalizado }}</span>
+        <span class="stat-label">Finalizados</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <i class="pi pi-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por estación, categoría, problema..."
+        [value]="globalFilter()"
+        (input)="globalFilter.set($any($event.target).value)"
+      />
+    </div>
+    <div class="section-filters">
+      <button class="sec-btn" [class.active]="selectedSection() === ''" (click)="selectedSection.set('')">Todas</button>
+      <button
+        class="sec-btn"
+        *ngFor="let sec of sections"
+        [class.active]="selectedSection() === sec"
+        (click)="selectedSection.set(sec)"
+      >{{ sec }}</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <p-table
+      [value]="filteredReports()"
+      [paginator]="true"
+      [rows]="15"
+      [rowsPerPageOptions]="[10,15,25,50]"
+      [scrollable]="true"
+      styleClass="disbof-table"
+      [globalFilterFields]="['estacion','categoriaLabel','subcategoria','comentarios']"
+      emptyMessage="No hay reportes registrados"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="creadoEn" style="min-width:140px">Fecha <p-sortIcon field="creadoEn" /></th>
+          <th pSortableColumn="estacion" style="min-width:100px">Estación <p-sortIcon field="estacion" /></th>
+          <th pSortableColumn="seccion" style="min-width:80px">Sección <p-sortIcon field="seccion" /></th>
+          <th pSortableColumn="categoriaLabel" style="min-width:130px">Categoría <p-sortIcon field="categoriaLabel" /></th>
+          <th style="min-width:220px">Problema</th>
+          <th style="min-width:200px">Comentarios</th>
+          <th pSortableColumn="status" style="min-width:130px">Estado <p-sortIcon field="status" /></th>
+          <th style="min-width:110px">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-report>
+        <tr class="table-row" [class]="'row-' + report.status">
+          <td class="date-cell">
+            <span class="date-main">{{ formatDate(report.creadoEn) }}</span>
+          </td>
+          <td><span class="station-chip">{{ report.estacion }}</span></td>
+          <td><span class="section-chip">{{ report.seccion }}</span></td>
+          <td>
+            <span class="category-chip"
+              [style.background]="getCategoryColor(report.categoria) + '22'"
+              [style.color]="getCategoryColor(report.categoria)"
+              [style.borderColor]="getCategoryColor(report.categoria) + '55'">
+              {{ report.categoriaLabel }}
+            </span>
+          </td>
+          <td><span class="problem-text">{{ report.subcategoria }}</span></td>
+          <td>
+            <span class="comment-text" [title]="report.comentarios || ''">
+              {{ report.comentarios || '—' }}
+            </span>
+          </td>
+          <td>
+            <p-tag
+              [value]="getStatusLabel(report.status)"
+              [severity]="getStatusSeverity(report.status)"
+              styleClass="status-tag"
+            />
+          </td>
+          <td>
+            <div class="row-actions">
+              <button class="action-btn edit" (click)="openEdit(report)" title="Editar reporte">
+                <i class="pi pi-pen-to-square"></i>
+              </button>
+              <button class="action-btn delete" (click)="confirmDelete(report)" title="Eliminar">
+                <i class="pi pi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <i class="pi pi-inbox"></i>
+              <p>No hay reportes registrados todavía.</p>
+              <p class="empty-hint">Escanea un QR en una estación para crear el primer reporte.</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- EDIT DIALOG                             -->
+<!-- ═══════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="showEditDialog"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  header="Editar Reporte"
+  [style]="{ width: 'min(540px, 95vw)' }"
+  styleClass="edit-dialog"
+  (onHide)="closeEdit()"
+>
+  <div class="edit-dialog-content" *ngIf="editingReport()">
+
+    <!-- Summary read-only -->
+    <div class="edit-summary">
+      <div class="edit-row">
+        <span class="elabel"><i class="pi pi-desktop"></i> Estación</span>
+        <span class="evalue station-val">{{ editingReport()!.estacion }} — Sección {{ editingReport()!.seccion }}</span>
+      </div>
+      <div class="edit-row">
+        <span class="elabel"><i class="pi pi-tag"></i> Categoría</span>
+        <span class="evalue cat-chip-sm"
+          [style.background]="getCategoryColor(editingReport()!.categoria) + '22'"
+          [style.color]="getCategoryColor(editingReport()!.categoria)">
+          {{ editingReport()!.categoriaLabel }}
+        </span>
+      </div>
+      <div class="edit-row">
+        <span class="elabel"><i class="pi pi-exclamation-circle"></i> Problema</span>
+        <span class="evalue">{{ editingReport()!.subcategoria }}</span>
+      </div>
+      <div class="edit-row">
+        <span class="elabel"><i class="pi pi-calendar"></i> Fecha</span>
+        <span class="evalue muted">{{ formatDate(editingReport()!.creadoEn) }}</span>
+      </div>
+    </div>
+
+    <div class="edit-divider"></div>
+
+    <!-- Status picker -->
+    <div class="edit-field">
+      <label class="field-label"><i class="pi pi-flag"></i> Estado</label>
+      <div class="status-picker">
+        <button
+          class="status-opt"
+          *ngFor="let opt of statusPickerOptions"
+          [class.active]="editStatus() === opt.value"
+          [style.--opt-color]="opt.color"
+          (click)="editStatus.set(opt.value)"
+        >
+          <i [class]="'pi ' + opt.icon"></i>
+          {{ opt.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="edit-field">
+      <label class="field-label"><i class="pi pi-comment"></i> Comentarios</label>
+      <textarea
+        class="edit-textarea"
+        [value]="editComentarios()"
+        (input)="editComentarios.set($any($event.target).value)"
+        placeholder="Agrega notas, solución aplicada, seguimiento..."
+        rows="4"
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="edit-footer">
+      <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text p-button-plain" (onClick)="closeEdit()" />
+      <p-button label="Guardar cambios" icon="pi pi-save" styleClass="p-button-primary btn-save" (onClick)="saveEdit()" />
+    </div>
+  </ng-template>
+</p-dialog>
