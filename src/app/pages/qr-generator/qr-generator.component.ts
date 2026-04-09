@@ -214,7 +214,7 @@ export class QrGeneratorComponent implements OnInit, AfterViewInit {
   private getBaseUrl(): string {
     // Forzado a la IP local para que el celular siempre pueda acceder
     // sin importar desde dónde se imprima el QR
-    return 'http://172.19.36.208:4200';
+    return 'http://172.19.36.143:4200';
   }
 
   // ── Navegación sin pestañas (Same Tab Routing) ──

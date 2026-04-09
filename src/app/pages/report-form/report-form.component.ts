@@ -15,7 +15,7 @@ import { MessageService } from 'primeng/api';
 
 import {
   REPORT_CATEGORIES, ReportCategoryDef, ReportSubcategory,
-  isValidStation, getStation, Station
+  isValidStation, getStation, Station, OTROS_CATEGORIES
 } from '../../models/report.models';
 import { ReportService } from '../../services/report.service';
 
@@ -43,7 +43,7 @@ export class ReportFormComponent implements OnInit {
   invalidStation = signal(false);
   estacionCode = signal('');
 
-  categories = REPORT_CATEGORIES;
+  categoriesList = signal<ReportCategoryDef[]>(REPORT_CATEGORIES);
   selectedCategory = signal<ReportCategoryDef | null>(null);
   selectedSubcategory = signal<ReportSubcategory | null>(null);
 
@@ -51,6 +51,7 @@ export class ReportFormComponent implements OnInit {
   comentarios = signal('');
   isSubmitting = signal(false);
   showSuccess = signal(false);
+  autoCloseOnFinish = signal(false);
 
   // El técnico elige el estado inicial al guardar
   selectedStatus = signal<'pendiente' | 'en_progreso' | 'finalizado'>('pendiente');
@@ -87,13 +88,18 @@ export class ReportFormComponent implements OnInit {
     if (!station) return {};
     const reports = this.reportService.getByStation(station.code);
     const counts: Record<string, number> = {};
-    for (const cat of this.categories) {
+    for (const cat of this.categoriesList()) {
       counts[cat.id] = reports.filter(r => r.categoria === cat.id && r.status !== 'finalizado').length;
     }
     return counts;
   });
 
   ngOnInit(): void {
+    const savedAutoClose = localStorage.getItem('autoCloseOnFinish');
+    if (savedAutoClose !== null) {
+      this.autoCloseOnFinish.set(savedAutoClose === 'true');
+    }
+
     this.route.queryParams.subscribe(params => {
       const estacion = params['estacion'];
       if (!estacion) {
@@ -109,35 +115,46 @@ export class ReportFormComponent implements OnInit {
 
       if (estacion.toUpperCase() === 'OTROS') {
         this.loadOtrosCategories();
+      } else {
+        this.categoriesList.set(REPORT_CATEGORIES);
       }
     });
   }
 
   async loadOtrosCategories(): Promise<void> {
     const customCats = await this.reportService.getOtrosCategories();
-    this.selectedCategory.set({
-      id: 'otros' as any,
-      label: 'Otros Equipos',
-      icon: 'pi pi-desktop',
-      color: '#64748b',
-      gradient: '',
-      subcategories: [
-        { id: 'impresora',           label: 'Impresora' },
-        { id: 'compartida',          label: 'Carpeta Compartida' },
-        { id: 'equipo_admin',        label: 'Equipo administrativo' },
-        { id: 'bd_sinue',            label: 'Bases de datos sinue' },
-        { id: 'usuario_checador',    label: 'Agregar usuarios al checador' },
-        { id: 'reinicio_servidor',   label: 'Reinicio de Servidor' },
-        { id: 'pantalla_comedor',    label: 'Pantalla comedor' },
-        { id: 'pantalla_capac',      label: 'Pantalla capacitacion' },
-        { id: 'prob_checador',       label: 'Problemas con checador' },
-        { id: 'camaras_recepcion',   label: 'Camaras recepcion' },
-        { id: 'cambio_proveedor',    label: 'Cambio de proovedor de red' },
-        ...customCats,
+    
+    // Create a copy to inject custom items
+    const otrosCats = JSON.parse(JSON.stringify(OTROS_CATEGORIES)) as ReportCategoryDef[];
+    
+    // Inject Custom Cats into their designated category
+    for (const custom of customCats) {
+      const catId = custom.categoryId || 'otros_personalizado';
+      const targetCat = otrosCats.find(c => c.id as string === catId);
+      if (targetCat) {
+        targetCat.subcategories.push(custom);
+      } else {
+        const fallback = otrosCats.find(c => c.id as string === 'otros_personalizado');
+        if (fallback) fallback.subcategories.push(custom);
+      }
+    }
+    
+    // Add "Añadir otro..." to ALL empty and existing categories
+    for (const cat of otrosCats) {
+      cat.subcategories.push({ id: 'otro_custom', label: 'Añadir otro...' });
+    }
+    
+    this.categoriesList.set(otrosCats);
 
-        { id: 'otro_custom', label: 'Añadir otro...' }
-      ]
-    });
+    // Refresh the selectedCategory reference if one is already selected
+    // so the UI updates immediately when adding/deleting custom items.
+    const current = this.selectedCategory();
+    if (current) {
+      const updated = otrosCats.find(c => c.id === current.id);
+      if (updated) {
+        this.selectedCategory.set(updated);
+      }
+    }
   }
 
   selectCategory(cat: ReportCategoryDef): void {
@@ -149,7 +166,7 @@ export class ReportFormComponent implements OnInit {
       this.customMode.set(false);
       return;
     }
-    if (this.station()?.code === 'OTROS') return;
+    
     this.subSearch.set('');
     this.selectedCategory.set(null);
     this.selectedSubcategory.set(null);
@@ -171,11 +188,13 @@ export class ReportFormComponent implements OnInit {
     const text = this.customText().trim();
     if (!text) return;
     
-    // Guardar permanentemente en la base de datos "otros" global
-    const saved = await this.reportService.addOtrosCategory(text);
+    const catId = this.selectedCategory()?.id as string;
+
+    // Guardar permanentemente en la base de datos
+    const saved = await this.reportService.addOtrosCategory(text, catId);
     
     this.customMode.set(false);
-    this.selectSubcategory({ id: saved ? saved.id : 'custom_' + Date.now(), label: text });
+    this.selectSubcategory({ id: saved ? saved.id : 'custom_' + Date.now(), label: text, categoryId: catId });
   }
 
   editCustomCategory(e: Event, cat: ReportSubcategory): void {
@@ -216,7 +235,16 @@ export class ReportFormComponent implements OnInit {
     this.selectedSubcategory.set(null);
   }
 
-  submitReport(): void {
+  isMobile(): boolean {
+    return window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  onAutoCloseChange(value: boolean): void {
+    this.autoCloseOnFinish.set(value);
+    localStorage.setItem('autoCloseOnFinish', String(value));
+  }
+
+  async submitReport(): Promise<void> {
     const station = this.station();
     const cat = this.selectedCategory();
     const sub = this.selectedSubcategory();
@@ -224,9 +252,11 @@ export class ReportFormComponent implements OnInit {
 
     this.isSubmitting.set(true);
 
-    // Simulate small delay for UX
-    setTimeout(() => {
-      this.reportService.addReport({
+    const autoClose = this.autoCloseOnFinish();
+    const isMobileDevice = this.isMobile();
+
+    setTimeout(async () => {
+      const result = await this.reportService.addReport({
         fecha: new Date().toISOString(),
         estacion: station.code,
         seccion: station.seccion,
@@ -239,7 +269,16 @@ export class ReportFormComponent implements OnInit {
 
       this.isSubmitting.set(false);
       this.showConfirmDialog.set(false);
-      this.showSuccess.set(true);
+
+      if (autoClose && isMobileDevice) {
+        if (result) {
+          window.close();
+        } else {
+          this.showSuccess.set(true);
+        }
+      } else {
+        this.showSuccess.set(true);
+      }
     }, 600);
   }
 
@@ -249,12 +288,11 @@ export class ReportFormComponent implements OnInit {
     this.comentarios.set('');
     this.customMode.set(false);
     this.customText.set('');
-    // Si es estación OTROS, volver a cargar las subcategorías en lugar de mostrar el grid de categorías
+    
     if (this.station()?.code === 'OTROS') {
-      this.loadOtrosCategories();
-    } else {
-      this.selectedCategory.set(null);
+      this.loadOtrosCategories(); 
     }
+    this.selectedCategory.set(null);
   }
 
   goToReports(): void {

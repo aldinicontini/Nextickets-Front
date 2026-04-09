@@ -81,7 +81,7 @@
   <div class="categories-grid" *ngIf="!selectedCategory()">
     <div
       class="category-card"
-      *ngFor="let cat of categories"
+      *ngFor="let cat of categoriesList()"
       [style.--cat-color]="cat.color"
       [style.--cat-gradient]="cat.gradient"
       (click)="selectCategory(cat)"
@@ -103,7 +103,7 @@
 
   <!-- ── SUBCATEGORIES & CUSTOM ── -->
   <div class="subcategories-section" *ngIf="selectedCategory()">
-    <div class="back-header" *ngIf="station()?.code !== 'OTROS' || customMode()">
+    <div class="back-header">
       <button class="back-btn" (click)="backToCategories()">
         <i class="pi pi-arrow-left"></i>
         Volver
@@ -263,6 +263,27 @@
         placeholder="Describe el problema con más detalle..."
         rows="3"
       ></textarea>
+    </div>
+
+    <div class="auto-close-toggle">
+      <label class="toggle-label">
+        <div class="toggle-info">
+          <i class="pi pi-mobile"></i>
+          <span class="toggle-text">
+            <strong>Cerrar automáticamente</strong>
+            <small>Cierra la pestaña al confirmar (solo móvil)</small>
+          </span>
+        </div>
+        <div class="toggle-switch">
+          <input
+            type="checkbox"
+            [checked]="autoCloseOnFinish()"
+            (change)="onAutoCloseChange($any($event.target).checked)"
+            id="autoCloseToggle"
+          />
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
     </div>
   </div>
 

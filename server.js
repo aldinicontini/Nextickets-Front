@@ -114,7 +114,8 @@ app.post('/api/otros-categories', (req, res) => {
   const cats = readOtrosDB();
   const newCat = {
     id: 'custom_' + Date.now(),
-    label: req.body.label
+    label: req.body.label,
+    categoryId: req.body.categoryId || 'otros_personalizado'
   };
   cats.push(newCat);
   writeOtrosDB(cats);

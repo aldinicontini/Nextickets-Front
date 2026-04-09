@@ -1,5 +1,17 @@
 [
   {
+    "fecha": "2026-04-09T21:10:52.271Z",
+    "estacion": "OTROS",
+    "seccion": "OTROS",
+    "categoria": "otros",
+    "categoriaLabel": "Otros Equipos",
+    "subcategoria": "Impresora",
+    "comentarios": "",
+    "status": "finalizado",
+    "id": "1775769061535",
+    "creadoEn": "2026-04-09T21:10:52.271Z"
+  },
+  {
     "fecha": "2026-04-09T00:39:17.392Z",
     "estacion": "OTROS",
     "seccion": "OTROS",

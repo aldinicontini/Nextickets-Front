@@ -2,10 +2,10 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { saveAs } from 'file-saver';
-import { Report, ReportStatus, ReportCategory, REPORT_CATEGORIES, ReportSubcategory } from '../models/report.models';
+import { Report, ReportStatus, ReportCategory, REPORT_CATEGORIES, ALL_CATEGORIES, ReportSubcategory } from '../models/report.models';
 
-const API_URL = 'http://172.19.36.208:3000/api/reports';
-const OTROS_API_URL = 'http://172.19.36.208:3000/api/otros-categories';
+const API_URL = 'http://172.19.36.143:3000/api/reports';
+const OTROS_API_URL = 'http://172.19.36.143:3000/api/otros-categories';
 
 @Injectable({ providedIn: 'root' })
 export class ReportService {
@@ -27,9 +27,9 @@ export class ReportService {
     }
   }
 
-  async addOtrosCategory(label: string): Promise<ReportSubcategory | null> {
+  async addOtrosCategory(label: string, categoryId?: string): Promise<ReportSubcategory | null> {
     try {
-      return await firstValueFrom(this.http.post<ReportSubcategory>(OTROS_API_URL, { label }));
+      return await firstValueFrom(this.http.post<ReportSubcategory>(OTROS_API_URL, { label, categoryId }));
     } catch {
       return null;
     }
@@ -106,11 +106,11 @@ export class ReportService {
 
   // ── Categories helper ─────────────────────────────
   getCategoryColor(cat: ReportCategory): string {
-    return REPORT_CATEGORIES.find(c => c.id === cat)?.color ?? '#94a3b8';
+    return ALL_CATEGORIES.find(c => c.id === cat)?.color ?? '#94a3b8';
   }
 
   getCategoryLabel(cat: ReportCategory): string {
-    return REPORT_CATEGORIES.find(c => c.id === cat)?.label ?? cat;
+    return ALL_CATEGORIES.find(c => c.id === cat)?.label ?? cat;
   }
 
   // ── Status helpers ────────────────────────────────

@@ -4,11 +4,12 @@
 
 export type ReportStatus = 'pendiente' | 'en_progreso' | 'finalizado';
 
-export type ReportCategory = 'huawei' | 'fallas_fisicas' | 'monitor' | 'internet';
+export type ReportCategory = 'huawei' | 'fallas_fisicas' | 'monitor' | 'internet' | 'red_conectividad' | 'servidores_infra' | 'control_acceso' | 'hardware_perifericos' | 'audiovisual_senalizacion' | 'otros_personalizado';
 
 export interface ReportSubcategory {
   id: string;
   label: string;
+  categoryId?: string;
 }
 
 export interface ReportCategoryDef {
@@ -94,6 +95,78 @@ export const REPORT_CATEGORIES: ReportCategoryDef[] = [
     ]
   }
 ];
+
+// ==========================================
+// CATEGORIAS PARA OTROS
+// ==========================================
+export const OTROS_CATEGORIES: ReportCategoryDef[] = [
+  {
+    id: 'red_conectividad',
+    label: 'Red y Conectividad',
+    icon: 'pi pi-wifi',
+    color: '#0ea5e9',
+    gradient: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+    subcategories: [
+      { id: 'compartida', label: 'Carpeta Compartida' },
+      { id: 'cambio_proveedor', label: 'Cambio de proovedor de red' },
+    ]
+  },
+  {
+    id: 'servidores_infra',
+    label: 'Servidores e Infraestructura',
+    icon: 'pi pi-server',
+    color: '#6366f1',
+    gradient: 'linear-gradient(135deg, #4f46e5, #6366f1)',
+    subcategories: [
+      { id: 'bd_sinue', label: 'Bases de datos sinue' },
+      { id: 'reinicio_servidor', label: 'Reinicio de Servidor' },
+    ]
+  },
+  {
+    id: 'control_acceso',
+    label: 'Control de Acceso',
+    icon: 'pi pi-id-card',
+    color: '#14b8a6',
+    gradient: 'linear-gradient(135deg, #0d9488, #14b8a6)',
+    subcategories: [
+      { id: 'usuario_checador', label: 'Agregar usuarios al checador' },
+      { id: 'prob_checador', label: 'Problemas con checador' },
+    ]
+  },
+  {
+    id: 'hardware_perifericos',
+    label: 'Hardware y Periféricos',
+    icon: 'pi pi-desktop',
+    color: '#f59e0b',
+    gradient: 'linear-gradient(135deg, #d97706, #f59e0b)',
+    subcategories: [
+      { id: 'impresora', label: 'Impresora' },
+      { id: 'equipo_admin', label: 'Equipo administrativo' },
+    ]
+  },
+  {
+    id: 'audiovisual_senalizacion',
+    label: 'Audiovisual y Señalización',
+    icon: 'pi pi-video',
+    color: '#ec4899',
+    gradient: 'linear-gradient(135deg, #db2777, #ec4899)',
+    subcategories: [
+      { id: 'pantalla_comedor', label: 'Pantalla comedor' },
+      { id: 'pantalla_capac', label: 'Pantalla capacitacion' },
+      { id: 'camaras_recepcion', label: 'Camaras recepcion' },
+    ]
+  },
+  {
+    id: 'otros_personalizado',
+    label: 'Otros / Personalizado',
+    icon: 'pi pi-plus-circle',
+    color: '#64748b',
+    gradient: 'linear-gradient(135deg, #475569, #64748b)',
+    subcategories: []
+  }
+];
+
+export const ALL_CATEGORIES: ReportCategoryDef[] = [...REPORT_CATEGORIES, ...OTROS_CATEGORIES];
 
 // ==========================================
 // ESTACIONES (126 total)
