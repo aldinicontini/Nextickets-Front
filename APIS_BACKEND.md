@@ -1,7 +1,7 @@
 1. OBTENER TODOS LOS REPORTES (LISTAR)
 ---------------------------------------------------------
 Método: GET
-URL: http://172.19.36.208:3000/api/reports
+URL: https://nextickets.disbof.com/api/reports
 
 *No requiere Body (Cuerpo)*
 
@@ -26,7 +26,7 @@ Respuesta esperada (Array completo):
 2. CREAR UN NUEVO REPORTE
 ---------------------------------------------------------
 Método: POST
-URL: http://172.19.36.208:3000/api/reports
+URL: https://nextickets.disbof.com/api/reports
 
 Body (Petición enviada desde Angular):
 {
@@ -59,8 +59,8 @@ Respuesta esperada (El objeto guardado con su ID y fecha de creación generados 
 3. ACTUALIZAR/EDITAR UN REPORTE
 ---------------------------------------------------------
 Método: PUT
-URL: http://172.19.36.208:3000/api/reports/{id}
-Ejemplo: http://172.19.36.208:3000/api/reports/1775176745199
+URL: https://nextickets.disbof.com/api/reports/{id}
+Ejemplo: https://nextickets.disbof.com/api/reports/1775176745199
 
 Body (Angular manda solo las llaves que cambiaron):
 {
@@ -87,8 +87,8 @@ Respuesta esperada (El objeto completo con la información actualizada):
 4. ELIMINAR UN REPORTE
 ---------------------------------------------------------
 Método: DELETE
-URL: http://172.19.36.208:3000/api/reports/{id}
-Ejemplo: http://172.19.36.208:3000/api/reports/1775176745199
+URL: https://nextickets.disbof.com/api/reports/{id}
+Ejemplo: https://nextickets.disbof.com/api/reports/1775176745199
 
 *No requiere Body (Cuerpo)*
 
@@ -99,7 +99,7 @@ Código de éxito (Status 200 OK), sin necesidad de JSON.
 5. OBTENER CATEGORÍAS PERSONALIZADAS DE OTROS
 ---------------------------------------------------------
 Método: GET
-URL: http://172.19.36.208:3000/api/otros-categories
+URL: https://nextickets.disbof.com/api/otros-categories
 
 Respuesta esperada:
 [
@@ -110,7 +110,7 @@ Respuesta esperada:
 6. AGREGAR CATEGORÍA PERSONALIZADA DE OTROS
 ---------------------------------------------------------
 Método: POST
-URL: http://172.19.36.208:3000/api/otros-categories
+URL: https://nextickets.disbof.com/api/otros-categories
 
 Body:
 { "label": "Mi categoría personalizada" }
@@ -122,7 +122,7 @@ Respuesta esperada:
 7. EDITAR CATEGORÍA PERSONALIZADA DE OTROS
 ---------------------------------------------------------
 Método: PUT
-URL: http://172.19.36.208:3000/api/otros-categories/{id}
+URL: https://nextickets.disbof.com/api/otros-categories/{id}
 
 Body:
 { "label": "Nuevo nombre" }
@@ -134,7 +134,7 @@ Respuesta esperada:
 8. ELIMINAR CATEGORÍA PERSONALIZADA DE OTROS
 ---------------------------------------------------------
 Método: DELETE
-URL: http://172.19.36.208:3000/api/otros-categories/{id}
+URL: https://nextickets.disbof.com/api/otros-categories/{id}
 
 Respuesta esperada:
 Código de éxito (Status 200 OK), sin necesidad de JSON.
