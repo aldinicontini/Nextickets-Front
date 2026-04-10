@@ -4,8 +4,8 @@ import { firstValueFrom } from 'rxjs';
 import { saveAs } from 'file-saver';
 import { Report, ReportStatus, ReportCategory, REPORT_CATEGORIES, ALL_CATEGORIES, ReportSubcategory } from '../models/report.models';
 
-const API_URL = 'http://172.19.36.143:3000/api/reports';
-const OTROS_API_URL = 'http://172.19.36.143:3000/api/otros-categories';
+const API_URL = 'https://nextickets.disbof.com/api/reports';
+const OTROS_API_URL = 'https://nextickets.disbof.com/api/otros-categories';
 
 @Injectable({ providedIn: 'root' })
 export class ReportService {
